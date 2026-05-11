@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AppShell from './layouts/AppShell'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         {/* Auth pages — no navbar/sidebar */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         {/* App pages — wrapped with AppShell (shows navbar + sidebar) */}
         <Route element={<AppShell />}>
