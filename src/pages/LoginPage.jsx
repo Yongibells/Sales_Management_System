@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import logo from '../assets/logo.png'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -45,28 +46,17 @@ export default function LoginPage() {
 
           {/* Title */}
           <div className="text-center mb-7">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{
-                background: 'rgba(0,255,80,0.08)',
-                border: '1px solid rgba(0,255,80,0.3)',
-                boxShadow: '0 0 25px rgba(0,255,80,0.15)'
-              }}>
-              <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-                <rect x="8" y="8" width="18" height="18" rx="3"
-                  stroke="#00ff50" strokeWidth="1.5" fill="none" />
-                <rect x="13" y="13" width="8" height="8" rx="1"
-                  fill="rgba(0,255,80,0.3)" />
-                <line x1="17" y1="2" x2="17" y2="8"
-                  stroke="#00ff50" strokeWidth="1.5" strokeLinecap="round"/>
-                <line x1="17" y1="26" x2="17" y2="32"
-                  stroke="#00ff50" strokeWidth="1.5" strokeLinecap="round"/>
-                <line x1="2" y1="17" x2="8" y2="17"
-                  stroke="#00ff50" strokeWidth="1.5" strokeLinecap="round"/>
-                <line x1="26" y1="17" x2="32" y2="17"
-                  stroke="#00ff50" strokeWidth="1.5" strokeLinecap="round"/>
-                <circle cx="17" cy="17" r="2" fill="#00ff50" />
-              </svg>
-            </div>
+            <img
+  src={logo}
+  alt="Hope Inc Logo"
+  className="mx-auto mb-4"
+  style={{
+    width: '100px',
+    height: '100px',
+    borderRadius: '20px',
+    boxShadow: '0 0 30px rgba(0,255,80,0.3)'
+  }}
+/>
 
             <h1 className="text-2xl font-bold tracking-widest uppercase"
               style={{
