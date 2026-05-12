@@ -1,3 +1,4 @@
+import SalesListPage from './pages/SalesListPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AppShell from './layouts/AppShell'
 import LoginPage from './pages/LoginPage'
@@ -20,7 +21,7 @@ export default function App() {
 
         {/* App pages — wrapped with AppShell (shows navbar + sidebar) */}
         <Route element={<AppShell />}>
-          <Route path="/sales" element={<div>Sales Page</div>} />
+          <Route path="/sales" element={<SalesListPage />} />
           <Route path="/lookups/customers" element={<CustomerLookupPage />} />
           <Route path="/lookups/employees" element={<EmployeeLookupPage />} />
           <Route path="/lookups/products" element={<ProductLookupPage />} />
