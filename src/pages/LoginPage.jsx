@@ -1,14 +1,30 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import logo from '../assets/logo.png'
+import { supabase } from '../lib/supabaseClient'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const handleEmailLogin = (e) => {
+  const handleEmailLogin = async (e) => {
     e.preventDefault()
-    console.log('Logging in with:', email, password)
+    setError('')
+    setLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    navigate('/sales')
+    setLoading(false)
   }
 
   return (
@@ -164,8 +180,9 @@ export default function LoginPage() {
                 e.target.style.boxShadow = '0 0 25px rgba(0,255,80,0.3)'
                 e.target.style.transform = 'translateY(0)'
               }}
+disabled={loading}
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
