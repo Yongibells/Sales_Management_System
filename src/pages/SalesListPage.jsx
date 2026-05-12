@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import AddSaleModal from '../components/sales/AddSaleModal'
+import EditSaleModal from '../components/sales/EditSaleModal'
+import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
 
 export default function SalesListPage() {
   const [sales, setSales] = useState([])
@@ -7,6 +10,9 @@ export default function SalesListPage() {
   const [search, setSearch] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  const [showAdd, setShowAdd] = useState(false)
+  const [editSale, setEditSale] = useState(null)
+  const [deleteSale, setDeleteSale] = useState(null)
 
   useEffect(() => {
     fetchSales()
@@ -45,8 +51,8 @@ export default function SalesListPage() {
             All sales records
           </p>
         </div>
-        {/* TODO: show Add button when M4 merges feat/rights-sales-gating */}
         <button
+          onClick={() => setShowAdd(true)}
           style={{
             background: 'linear-gradient(135deg, #00cc40, #00ff50)',
             color: '#030d03',
@@ -162,8 +168,8 @@ export default function SalesListPage() {
                     </td>
                     <td className="p-3">
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        {/* View button */}
                         <button
+                          onClick={() => setEditSale(s)}
                           style={{
                             background: 'transparent',
                             border: '1px solid rgba(0,255,80,0.3)',
@@ -174,10 +180,22 @@ export default function SalesListPage() {
                             borderRadius: '4px',
                             cursor: 'pointer'
                           }}>
-                          VIEW
+                          EDIT
                         </button>
-                        {/* TODO: EDIT button — gated by SALES_EDIT (M4) */}
-                        {/* TODO: DELETE button — gated by SALES_DEL (M4) */}
+                        <button
+                          onClick={() => setDeleteSale(s)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(255,80,80,0.3)',
+                            color: 'rgba(255,100,100,0.7)',
+                            fontFamily: 'monospace',
+                            fontSize: '11px',
+                            padding: '4px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}>
+                          DELETE
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -193,6 +211,28 @@ export default function SalesListPage() {
             {filtered.length} transactions found
           </div>
         </div>
+      )}
+
+      {/* Modals */}
+      {showAdd && (
+        <AddSaleModal
+          onClose={() => setShowAdd(false)}
+          onSaved={fetchSales}
+        />
+      )}
+      {editSale && (
+        <EditSaleModal
+          sale={editSale}
+          onClose={() => setEditSale(null)}
+          onSaved={fetchSales}
+        />
+      )}
+      {deleteSale && (
+        <DeleteSaleDialog
+          sale={deleteSale}
+          onClose={() => setDeleteSale(null)}
+          onDeleted={fetchSales}
+        />
       )}
 
     </div>
