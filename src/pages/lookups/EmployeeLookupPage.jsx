@@ -1,25 +1,58 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
+import ErrorBoundary from '../../components/ErrorBoundary'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
-export default function EmployeeLookupPage() {
+function EmployeeLookupContent() {
   const [employees, setEmployees] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    supabase
-      .from('employee')
-      .select('*')
-      .then(({ data }) => {
-        setEmployees(data || [])
-        setLoading(false)
-      })
+    fetchEmployees()
   }, [])
+
+  const fetchEmployees = async () => {
+    setLoading(true)
+    setError(null)
+    const { data, error } = await supabase.from('employee').select('*')
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+    setEmployees(data || [])
+    setLoading(false)
+  }
 
   const filtered = employees.filter(e =>
     e.lastname?.toLowerCase().includes(search.toLowerCase()) ||
     e.firstname?.toLowerCase().includes(search.toLowerCase()) ||
     e.empno?.toLowerCase().includes(search.toLowerCase())
+  )
+
+  if (loading) return <LoadingSpinner />
+
+  if (error) return (
+    <div className="p-6 font-mono" style={{ color: 'rgba(255,80,80,0.8)' }}>
+      <p>Error: {error}</p>
+      <button
+        onClick={fetchEmployees}
+        style={{
+          marginTop: '16px',
+          background: 'transparent',
+          border: '1px solid rgba(255,80,80,0.4)',
+          color: 'rgba(255,80,80,0.7)',
+          fontFamily: 'monospace',
+          fontSize: '11px',
+          padding: '6px 14px',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}>
+        RETRY
+      </button>
+    </div>
   )
 
   return (
@@ -53,58 +86,12 @@ export default function EmployeeLookupPage() {
       </div>
 
       {/* Table */}
-      {loading ? (
-        <p className="font-mono" style={{ color: 'rgba(0,255,80,0.5)' }}>
-          Loading...
-        </p>
-      ) : (
-        <div className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid rgba(0,255,80,0.2)' }}>
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ background: 'rgba(0,255,80,0.1)' }}>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Emp No</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Last Name</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>First Name</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Gender</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Hire Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((e, i) => (
-                <tr key={e.empno}
-                  style={{
-                    background: i % 2 === 0 ? 'rgba(0,255,80,0.02)' : 'transparent',
-                    borderTop: '1px solid rgba(0,255,80,0.1)'
-                  }}>
-                  <td className="p-3 font-mono"
-                    style={{ color: '#00ff50' }}>{e.empno}</td>
-                  <td className="p-3 font-mono"
-                    style={{ color: '#b0ffb0' }}>{e.lastname}</td>
-                  <td className="p-3 font-mono"
-                    style={{ color: '#b0ffb0' }}>{e.firstname}</td>
-                  <td className="p-3 font-mono"
-                    style={{ color: '#b0ffb0' }}>{e.gender}</td>
-                  <td className="p-3 font-mono"
-                    style={{ color: 'rgba(0,255,80,0.6)' }}>{e.hiredate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="p-3 font-mono text-xs"
-            style={{
-              color: 'rgba(0,255,80,0.4)',
-              borderTop: '1px solid rgba(0,255,80,0.1)'
-            }}>
-            {filtered.length} records found
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+      <div className="rounded-lg overflow-hidden"
+        style={{ border: '1px solid rgba(0,255,80,0.2)' }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ background: 'rgba(0,255,80,0.1)' }}>
+              <th className="p-3 text-left font-mono"
+                style={{ color: 'rgba(0,255,80,0.8)' }}>Emp No</th>
+              <th className="p-3 text-left font-mono"
+                style={{ color: 'rgba(0,255,80,0.8)' }
