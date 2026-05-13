@@ -1,9 +1,12 @@
 import logo from '../assets/logo.png'
+import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
 
 export default function Navbar() {
-  const handleLogout = () => {
-    // TODO: wire to Supabase when M4 merges feat/auth-context
-    console.log('Logout')
+  const { currentUser } = useAuth()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
   }
 
   return (
@@ -17,8 +20,6 @@ export default function Navbar() {
       paddingLeft: '24px',
       paddingRight: '24px',
     }}>
-
-      {/* Left: logo + name */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <img src={logo} alt="Hope Inc" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
         <span style={{
@@ -31,12 +32,9 @@ export default function Navbar() {
           HOPE, INC.
         </span>
       </div>
-
-      {/* Right: user + logout */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <span style={{ color: 'rgba(0,255,80,0.6)', fontFamily: 'monospace', fontSize: '13px' }}>
-          {/* TODO: show currentUser.email when M4 merges feat/auth-context */}
-          user@example.com
+          {currentUser?.email ?? 'Not signed in'}
         </span>
         <button
           onClick={handleLogout}
@@ -63,7 +61,6 @@ export default function Navbar() {
           LOGOUT
         </button>
       </div>
-
     </div>
   )
 }

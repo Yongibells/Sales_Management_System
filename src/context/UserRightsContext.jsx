@@ -6,52 +6,58 @@ const UserRightsContext = createContext(null)
 
 export function UserRightsProvider({ children }) {
   const { currentUser, loading: authLoading } = useAuth()
-  const [rights, setRights] = useState([])
+  const [rights, setRights] = useState({})
   const [userType, setUserType] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loadingRights, setLoadingRights] = useState(true)
 
   useEffect(() => {
     if (authLoading) return
     if (!currentUser) {
-      setRights([])
+      setRights({})
       setUserType(null)
-      setLoading(false)
+      setLoadingRights(false)
       return
     }
 
     async function loadRights() {
-      setLoading(true)
+      setLoadingRights(true)
 
       const { data: userData } = await supabase
         .from('user')
         .select('user_type')
         .eq('userid', currentUser.id)
         .single()
-
       setUserType(userData?.user_type ?? null)
 
       const { data: rightsData } = await supabase
         .from('usermodule_rights')
-        .select('rightsid, isallowed')
+        .select('rightsid, isallowed, rights(rightsname)')
         .eq('userid', currentUser.id)
 
-      setRights(rightsData ?? [])
-      setLoading(false)
+      const rightsMap = {}
+      if (rightsData) {
+        rightsData.forEach(row => {
+          const name = row.rights?.rightsname
+          if (name) rightsMap[name] = row.isallowed ? 1 : 0
+        })
+      }
+
+      setRights(rightsMap)
+      setLoadingRights(false)
     }
 
     loadRights()
   }, [currentUser, authLoading])
 
-  function hasRight(rightsid) {
-    const right = rights.find((r) => r.rightsid === rightsid)
-    return right?.isallowed ?? false
-  }
-
   return (
-    <UserRightsContext.Provider value={{ rights, userType, loading, hasRight }}>
+    <UserRightsContext.Provider value={{ rights, userType, loadingRights }}>
       {children}
     </UserRightsContext.Provider>
   )
+}
+
+export function useRights() {
+  return useContext(UserRightsContext)
 }
 
 export function useUserRights() {
