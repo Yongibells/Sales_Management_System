@@ -77,6 +77,7 @@ export default function AddSaleModal({ onClose, onSaved }) {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '420px',
+        margin: '16px'
         padding: '28px',
       }}>
 
