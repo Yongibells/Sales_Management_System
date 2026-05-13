@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import AddSaleModal from '../components/sales/AddSaleModal'
 import EditSaleModal from '../components/sales/EditSaleModal'
 import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
 
 export default function SalesListPage() {
+  const navigate = useNavigate()
   const [sales, setSales] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -168,6 +170,20 @@ export default function SalesListPage() {
                     </td>
                     <td className="p-3">
                       <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          onClick={() => navigate(`/sales/${s.transno}`)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(0,255,80,0.3)',
+                            color: 'rgba(0,255,80,0.7)',
+                            fontFamily: 'monospace',
+                            fontSize: '11px',
+                            padding: '4px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}>
+                          VIEW
+                        </button>
                         <button
                           onClick={() => setEditSale(s)}
                           style={{

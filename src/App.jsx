@@ -1,3 +1,4 @@
+import DeletedItemsPage from './pages/DeletedItemsPage'
 import SalesListPage from './pages/SalesListPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AppShell from './layouts/AppShell'
@@ -8,7 +9,7 @@ import CustomerLookupPage from './pages/lookups/CustomerLookupPage'
 import EmployeeLookupPage from './pages/lookups/EmployeeLookupPage'
 import ProductLookupPage from './pages/lookups/ProductLookupPage'
 import PriceHistoryPage from './pages/lookups/PriceHistoryPage'
-
+import SalesDetailPage from './pages/SalesDetailPage'
 export default function App() {
   return (
     <BrowserRouter>
@@ -22,13 +23,14 @@ export default function App() {
         {/* App pages — wrapped with AppShell (shows navbar + sidebar) */}
         <Route element={<AppShell />}>
           <Route path="/sales" element={<SalesListPage />} />
+          <Route path="/sales/:transno" element={<SalesDetailPage />} />
           <Route path="/lookups/customers" element={<CustomerLookupPage />} />
           <Route path="/lookups/employees" element={<EmployeeLookupPage />} />
           <Route path="/lookups/products" element={<ProductLookupPage />} />
           <Route path="/lookups/prices" element={<PriceHistoryPage />} />
           <Route path="/reports" element={<div>Reports Page</div>} />
           <Route path="/admin" element={<div>Admin Page</div>} />
-          <Route path="/deleted-items" element={<div>Deleted Items Page</div>} />
+          <Route path="/deleted-items" element={<DeletedItemsPage />} />
         </Route>
 
         {/* Default */}
