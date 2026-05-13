@@ -10,7 +10,6 @@ CREATE TABLE customer (
   address      VARCHAR(200),
   payTerm      VARCHAR(50)
 );
-
 -- 2. employee table (no record_status, no stamp)
 CREATE TABLE employee (
   empNo        VARCHAR(10)  PRIMARY KEY,

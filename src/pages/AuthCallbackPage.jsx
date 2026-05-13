@@ -6,39 +6,11 @@ export default function AuthCallbackPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession()
-
-      if (error || !session) {
-        navigate('/login?error=not_activated')
-        return
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/sales')
       }
-
-      const userId = session.user.id
-
-      const { data, error: dbError } = await supabase
-        .from('user')
-        .select('record_status')
-        .eq('userid', userId)
-        .single()
-
-      if (dbError || !data) {
-        await supabase.auth.signOut()
-        navigate('/login?error=not_activated')
-        return
-      }
-
-      if (data.record_status !== 'ACTIVE') {
-        await supabase.auth.signOut()
-        navigate('/login?error=not_activated')
-        return
-      }
-
-      navigate('/sales')
-    }
-
-    // Small delay to let Supabase finish processing the OAuth redirect
-    setTimeout(checkSession, 1000)
+    })
   }, [])
 
   return (
