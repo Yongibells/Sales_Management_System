@@ -1,40 +1,51 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 
-export default function EditSaleModal({ sale, onClose, onSaved }) {
-  const [customers, setCustomers] = useState([])
-  const [employees, setEmployees] = useState([])
-  const [form, setForm] = useState({
-    salesdate: sale?.salesdate || '',
-    custno: sale?.custno || '',
-    empno: sale?.empno || ''
-  })
+export default function AddLineItemModal({ transno, onClose, onSaved }) {
+  const [products, setProducts] = useState([])
+  const [form, setForm] = useState({ prodcode: '', quantity: '', unitprice: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    supabase.from('customer').select('custno, custname').then(({ data }) => setCustomers(data || []))
-    supabase.from('employee').select('empno, firstname, lastname').then(({ data }) => setEmployees(data || []))
+    supabase.from('product').select('prodcode, description')
+      .then(({ data }) => setProducts(data || []))
   }, [])
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleProductChange = async (e) => {
+    const prodcode = e.target.value
+    setForm({ ...form, prodcode, unitprice: '' })
+
+    if (prodcode) {
+      const { data } = await supabase
+        .from('pricehist')
+        .select('unitprice')
+        .eq('prodcode', prodcode)
+        .order('effdate', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (data) setForm(prev => ({ ...prev, prodcode, unitprice: data.unitprice }))
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (!form.salesdate || !form.custno || !form.empno)
+    if (!form.prodcode || !form.quantity || !form.unitprice)
       return setError('All fields are required.')
 
     setLoading(true)
     const { error: err } = await supabase
-      .from('sales')
-      .update({
-        salesdate: form.salesdate,
-        custno: form.custno,
-        empno: form.empno
-      })
-      .eq('transno', sale.transno)
+      .from('salesdetail')
+      .insert([{
+        transno,
+        prodcode: form.prodcode,
+        quantity: Number(form.quantity),
+        unitprice: Number(form.unitprice),
+        record_status: 'ACTIVE'
+      }])
     setLoading(false)
 
     if (err) return setError(err.message)
@@ -94,7 +105,7 @@ maxHeight: '90vh',
           fontSize: '16px', fontWeight: 'bold',
           letterSpacing: '2px', marginBottom: '20px'
         }}>
-          EDIT TRANSACTION — {sale?.transno}
+          ADD LINE ITEM
         </h2>
 
         {error && (
@@ -112,31 +123,38 @@ maxHeight: '90vh',
         <form onSubmit={handleSubmit}>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={labelStyle}>Sales Date</label>
-            <input type="date" name="salesdate" value={form.salesdate}
-              onChange={handleChange} style={{ ...inputStyle, colorScheme: 'dark' }} />
+            <label style={labelStyle}>Product</label>
+            <select value={form.prodcode} onChange={handleProductChange} style={inputStyle}>
+              <option value="">Select product...</option>
+              {products.map(p => (
+                <option key={p.prodcode} value={p.prodcode}>
+                  {p.prodcode} — {p.description}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={labelStyle}>Customer</label>
-            <select name="custno" value={form.custno}
-              onChange={handleChange} style={inputStyle}>
-              <option value="">Select customer...</option>
-              {customers.map(c => (
-                <option key={c.custno} value={c.custno}>{c.custname}</option>
-              ))}
-            </select>
+            <label style={labelStyle}>Quantity</label>
+            <input
+              type="number" min="1" value={form.quantity}
+              onChange={e => setForm({ ...form, quantity: e.target.value })}
+              placeholder="Enter quantity"
+              style={inputStyle} />
           </div>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={labelStyle}>Employee</label>
-            <select name="empno" value={form.empno}
-              onChange={handleChange} style={inputStyle}>
-              <option value="">Select employee...</option>
-              {employees.map(e => (
-                <option key={e.empno} value={e.empno}>{e.lastname}, {e.firstname}</option>
-              ))}
-            </select>
+            <label style={labelStyle}>
+              Unit Price
+              <span style={{ color: 'rgba(0,255,80,0.4)', marginLeft: '8px', fontSize: '10px' }}>
+                (auto-filled from price history)
+              </span>
+            </label>
+            <input
+              type="number" value={form.unitprice}
+              onChange={e => setForm({ ...form, unitprice: e.target.value })}
+              placeholder="Auto-filled when product selected"
+              style={{ ...inputStyle, color: form.unitprice ? '#00ff50' : 'rgba(0,255,80,0.4)' }} />
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -156,13 +174,12 @@ maxHeight: '90vh',
               style={{
                 flex: 1, padding: '10px',
                 background: 'linear-gradient(135deg, #00cc40, #00ff50)',
-                border: 'none',
-                color: '#030d03',
+                border: 'none', color: '#030d03',
                 fontFamily: 'monospace', fontSize: '12px',
                 fontWeight: 'bold', borderRadius: '8px',
                 cursor: 'pointer', letterSpacing: '1px'
               }}>
-              {loading ? 'SAVING...' : 'SAVE CHANGES'}
+              {loading ? 'SAVING...' : 'SAVE'}
             </button>
           </div>
 
