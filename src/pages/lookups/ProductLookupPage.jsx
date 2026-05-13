@@ -42,4 +42,5 @@ function ProductLookupContent() {
           marginTop: '16px',
           background: 'transparent',
           border: '1px solid rgba(255,80,80,0.4)',
-          color: 'rgba(25
+          color: 'rgba(255,80,80,0.8)'
+
