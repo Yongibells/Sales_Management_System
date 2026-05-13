@@ -22,10 +22,8 @@ export default function AddSaleModal({ onClose, onSaved }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-
     if (!form.salesdate || !form.custno || !form.empno)
       return setError('All fields are required.')
-
     setLoading(true)
     const { error: err } = await supabase
       .from('sales')
@@ -36,7 +34,6 @@ export default function AddSaleModal({ onClose, onSaved }) {
         record_status: 'ACTIVE'
       }])
     setLoading(false)
-
     if (err) return setError(err.message)
     onSaved()
     onClose()
@@ -83,8 +80,11 @@ export default function AddSaleModal({ onClose, onSaved }) {
         padding: '28px',
 <<<<<<< HEAD
       }}>
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> f967fc9199c42f6fa2e360e7b9a72637c8419b41
         {/* Top bar */}
 >>>>>>> 757387f127cad26dcabb86753894672f828a3dd2
         <div style={{
@@ -110,12 +110,11 @@ export default function AddSaleModal({ onClose, onSaved }) {
             fontSize: '12px', padding: '10px',
             borderRadius: '6px', marginBottom: '16px'
           }}>
-            ✗ {error}
+            {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-
           <div style={{ marginBottom: '16px' }}>
             <label style={labelStyle}>Sales Date</label>
             <input type="date" name="salesdate" value={form.salesdate}
@@ -170,7 +169,6 @@ export default function AddSaleModal({ onClose, onSaved }) {
               {loading ? 'SAVING...' : 'SAVE'}
             </button>
           </div>
-
         </form>
       </div>
     </div>

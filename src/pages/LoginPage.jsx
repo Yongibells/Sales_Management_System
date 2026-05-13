@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import logo from '../assets/logo.png'
 import { supabase } from '../lib/supabaseClient'
 
@@ -9,6 +9,13 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('error') === 'not_activated') {
+      setError('Your account is not yet activated. Please contact your administrator.')
+    }
+  }, [])
 
   const handleEmailLogin = async (e) => {
     e.preventDefault()
