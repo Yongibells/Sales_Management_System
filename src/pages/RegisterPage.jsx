@@ -50,10 +50,14 @@ setLoading(true)
     setLoading(false)
   }
 
-  const handleGoogle = () => {
-    // TODO: wire to Supabase when M4 merges feat/auth-google
-    console.log('Google register')
-  }
+const handleGoogle = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`
+    }
+  })
+}
 
   const inputStyle = {
     background: 'rgba(0,255,80,0.04)',

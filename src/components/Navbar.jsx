@@ -1,12 +1,24 @@
 import logo from '../assets/logo.png'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
+<<<<<<< HEAD
+import { useNavigate } from 'react-router-dom'
+
+export default function Navbar() {
+  const { currentUser } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/login')
+=======
 
 export default function Navbar() {
   const { currentUser } = useAuth()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
+>>>>>>> dev
   }
 
   return (
@@ -20,6 +32,10 @@ export default function Navbar() {
       paddingLeft: '24px',
       paddingRight: '24px',
     }}>
+<<<<<<< HEAD
+      {/* Left: logo + name */}
+=======
+>>>>>>> dev
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <img src={logo} alt="Hope Inc" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
         <span style={{
@@ -32,9 +48,16 @@ export default function Navbar() {
           HOPE, INC.
         </span>
       </div>
+<<<<<<< HEAD
+      {/* Right: user + logout */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <span style={{ color: 'rgba(0,255,80,0.6)', fontFamily: 'monospace', fontSize: '13px' }}>
+          {currentUser?.email ?? 'user@example.com'}
+=======
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <span style={{ color: 'rgba(0,255,80,0.6)', fontFamily: 'monospace', fontSize: '13px' }}>
           {currentUser?.email ?? 'Not signed in'}
+>>>>>>> dev
         </span>
         <button
           onClick={handleLogout}
