@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../assets/logo.png'
+import { supabase } from '../lib/supabaseClient'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -25,14 +26,38 @@ export default function RegisterPage() {
     if (form.password.length < 8)
       return setError('Password must be at least 8 characters.')
 
-    // TODO: wire to Supabase when M4 merges feat/auth-email
-    console.log('Register:', form)
+setLoading(true)
+
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: {
+          first_name: form.firstName,
+          last_name: form.lastName,
+          username: form.username
+        }
+      }
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    navigate('/login')
+    setLoading(false)
   }
 
-  const handleGoogle = () => {
-    // TODO: wire to Supabase when M4 merges feat/auth-google
-    console.log('Google register')
-  }
+const handleGoogle = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`
+    }
+  })
+}
 
   const inputStyle = {
     background: 'rgba(0,255,80,0.04)',

@@ -1,4 +1,18 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
+
 export default function AuthCallbackPage() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/sales')
+      }
+    })
+  }, [])
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -9,8 +23,6 @@ export default function AuthCallbackPage() {
       justifyContent: 'center',
       fontFamily: 'monospace',
     }}>
-
-      {/* Spinner */}
       <div style={{
         width: '48px',
         height: '48px',
@@ -20,8 +32,6 @@ export default function AuthCallbackPage() {
         animation: 'spin 1s linear infinite',
         marginBottom: '24px',
       }} />
-
-      {/* Text */}
       <p style={{
         color: '#00ff50',
         fontSize: '14px',
@@ -29,15 +39,12 @@ export default function AuthCallbackPage() {
       }}>
         AUTHENTICATING...
       </p>
-
-      {/* Spin animation */}
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
       `}</style>
-
     </div>
   )
 }

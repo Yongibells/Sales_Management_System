@@ -93,6 +93,8 @@ export default function AddLineItemModal({ transno, onClose, onSaved }) {
         padding: '28px',
         }}>
         {/* Top bar */}
+maxHeight: '90vh',
+        padding: '28px',
         <div style={{
           height: '2px',
           background: 'linear-gradient(90deg, transparent, #00ff50, transparent)',

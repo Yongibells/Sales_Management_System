@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 
-export default function AddSaleModal({ onClose, onSaved }) {
+export default function EditSaleModal({ sale, onClose, onSaved }) {
   const [customers, setCustomers] = useState([])
   const [employees, setEmployees] = useState([])
   const [form, setForm] = useState({
-    salesdate: '',
-    custno: '',
-    empno: ''
+    salesdate: sale?.salesdate || '',
+    custno: sale?.custno || '',
+    empno: sale?.empno || ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -29,12 +29,12 @@ export default function AddSaleModal({ onClose, onSaved }) {
     setLoading(true)
     const { error: err } = await supabase
       .from('sales')
-      .insert([{
+      .update({
         salesdate: form.salesdate,
         custno: form.custno,
-        empno: form.empno,
-        record_status: 'ACTIVE'
-      }])
+        empno: form.empno
+      })
+      .eq('transno', sale.transno)
     setLoading(false)
 
     if (err) return setError(err.message)
@@ -77,12 +77,11 @@ export default function AddSaleModal({ onClose, onSaved }) {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '420px',
-        margin: '16px',
         overflowY: 'auto',
-        maxHeight: '90vh',
+maxHeight: '90vh',
         padding: '28px',
-        }}>
-        {/* Top bar */}
+      }}>
+
         <div style={{
           height: '2px',
           background: 'linear-gradient(90deg, transparent, #00ff50, transparent)',
@@ -95,7 +94,7 @@ export default function AddSaleModal({ onClose, onSaved }) {
           fontSize: '16px', fontWeight: 'bold',
           letterSpacing: '2px', marginBottom: '20px'
         }}>
-          ADD TRANSACTION
+          EDIT TRANSACTION — {sale?.transno}
         </h2>
 
         {error && (
@@ -163,7 +162,7 @@ export default function AddSaleModal({ onClose, onSaved }) {
                 fontWeight: 'bold', borderRadius: '8px',
                 cursor: 'pointer', letterSpacing: '1px'
               }}>
-              {loading ? 'SAVING...' : 'SAVE'}
+              {loading ? 'SAVING...' : 'SAVE CHANGES'}
             </button>
           </div>
 
