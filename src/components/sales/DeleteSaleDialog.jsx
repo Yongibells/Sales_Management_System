@@ -31,6 +31,8 @@ export default function DeleteSaleDialog({ sale, onClose, onDeleted }) {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '380px',
+        overflowY: 'auto',
+maxHeight: '90vh',
         padding: '28px',
       }}>
 
