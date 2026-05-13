@@ -88,9 +88,9 @@ export default function AddLineItemModal({ transno, onClose, onSaved }) {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '420px',
+        overflowY: 'auto',
+maxHeight: '90vh',
         padding: '28px',
-      }}>
-
         <div style={{
           height: '2px',
           background: 'linear-gradient(90deg, transparent, #00ff50, transparent)',

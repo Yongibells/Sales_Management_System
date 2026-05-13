@@ -77,6 +77,8 @@ export default function EditSaleModal({ sale, onClose, onSaved }) {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '420px',
+        overflowY: 'auto',
+maxHeight: '90vh',
         padding: '28px',
       }}>
 
