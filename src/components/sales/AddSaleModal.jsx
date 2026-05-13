@@ -78,15 +78,8 @@ export default function AddSaleModal({ onClose, onSaved }) {
         overflowY: 'auto',
         maxHeight: '90vh',
         padding: '28px',
-<<<<<<< HEAD
-      }}>
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> f967fc9199c42f6fa2e360e7b9a72637c8419b41
+        }}>
         {/* Top bar */}
->>>>>>> 757387f127cad26dcabb86753894672f828a3dd2
         <div style={{
           height: '2px',
           background: 'linear-gradient(90deg, transparent, #00ff50, transparent)',
