@@ -1,3 +1,4 @@
+import DeletedItemsPage from './pages/DeletedItemsPage'
 import SalesListPage from './pages/SalesListPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AppShell from './layouts/AppShell'
@@ -28,7 +29,7 @@ export default function App() {
           <Route path="/lookups/prices" element={<PriceHistoryPage />} />
           <Route path="/reports" element={<div>Reports Page</div>} />
           <Route path="/admin" element={<div>Admin Page</div>} />
-          <Route path="/deleted-items" element={<div>Deleted Items Page</div>} />
+          <Route path="/deleted-items" element={<DeletedItemsPage />} />
         </Route>
 
         {/* Default */}
