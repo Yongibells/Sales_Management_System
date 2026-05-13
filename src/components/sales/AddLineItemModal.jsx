@@ -89,6 +89,10 @@ export default function AddLineItemModal({ transno, onClose, onSaved }) {
         width: '100%',
         maxWidth: '420px',
         overflowY: 'auto',
+        maxHeight: '90vh',
+        padding: '28px',
+        }}>
+        {/* Top bar */}
 maxHeight: '90vh',
         padding: '28px',
         <div style={{
