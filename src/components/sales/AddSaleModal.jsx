@@ -81,8 +81,6 @@ export default function AddSaleModal({ onClose, onSaved }) {
         overflowY: 'auto',
         maxHeight: '90vh',
         padding: '28px',
-      }}>
-
         {/* Top bar */}
         <div style={{
           height: '2px',

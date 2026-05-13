@@ -1,24 +1,59 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
+import ErrorBoundary from '../../components/ErrorBoundary'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
-export default function PriceHistoryPage() {
+function PriceHistoryContent() {
   const [prices, setPrices] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    supabase
+    fetchPrices()
+  }, [])
+
+  const fetchPrices = async () => {
+    setLoading(true)
+    setError(null)
+    const { data, error } = await supabase
       .from('pricehist')
       .select('*')
       .order('effdate', { ascending: false })
-      .then(({ data }) => {
-        setPrices(data || [])
-        setLoading(false)
-      })
-  }, [])
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+    setPrices(data || [])
+    setLoading(false)
+  }
 
   const filtered = prices.filter(p =>
     p.prodcode?.toLowerCase().includes(search.toLowerCase())
+  )
+
+  if (loading) return <LoadingSpinner />
+
+  if (error) return (
+    <div className="p-6 font-mono" style={{ color: 'rgba(255,80,80,0.8)' }}>
+      <p>Error: {error}</p>
+      <button
+        onClick={fetchPrices}
+        style={{
+          marginTop: '16px',
+          background: 'transparent',
+          border: '1px solid rgba(255,80,80,0.4)',
+          color: 'rgba(255,80,80,0.7)',
+          fontFamily: 'monospace',
+          fontSize: '11px',
+          padding: '6px 14px',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}>
+        RETRY
+      </button>
+    </div>
   )
 
   return (
@@ -49,24 +84,29 @@ export default function PriceHistoryPage() {
         />
       </div>
 
-      {loading ? (
-        <p className="font-mono" style={{ color: 'rgba(0,255,80,0.5)' }}>Loading...</p>
-      ) : (
-        <div className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid rgba(0,255,80,0.2)' }}>
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ background: 'rgba(0,255,80,0.1)' }}>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Prod Code</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Effective Date</th>
-                <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Unit Price</th>
+      <div className="rounded-lg overflow-hidden"
+        style={{ border: '1px solid rgba(0,255,80,0.2)' }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ background: 'rgba(0,255,80,0.1)' }}>
+              <th className="p-3 text-left font-mono"
+                style={{ color: 'rgba(0,255,80,0.8)' }}>Prod Code</th>
+              <th className="p-3 text-left font-mono"
+                style={{ color: 'rgba(0,255,80,0.8)' }}>Effective Date</th>
+              <th className="p-3 text-left font-mono"
+                style={{ color: 'rgba(0,255,80,0.8)' }}>Unit Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="p-6 text-center font-mono"
+                  style={{ color: 'rgba(0,255,80,0.4)' }}>
+                  No records found
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p, i) => (
+            ) : (
+              filtered.map((p, i) => (
                 <tr key={`${p.prodcode}-${p.effdate}`}
                   style={{
                     background: i % 2 === 0 ? 'rgba(0,255,80,0.02)' : 'transparent',
@@ -83,18 +123,26 @@ export default function PriceHistoryPage() {
                     })}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="p-3 font-mono text-xs"
-            style={{
-              color: 'rgba(0,255,80,0.4)',
-              borderTop: '1px solid rgba(0,255,80,0.1)'
-            }}>
-            {filtered.length} records found
-          </div>
+              ))
+            )}
+          </tbody>
+        </table>
+        <div className="p-3 font-mono text-xs"
+          style={{
+            color: 'rgba(0,255,80,0.4)',
+            borderTop: '1px solid rgba(0,255,80,0.1)'
+          }}>
+          {filtered.length} records found
         </div>
-      )}
+      </div>
     </div>
+  )
+}
+
+export default function PriceHistoryPage() {
+  return (
+    <ErrorBoundary>
+      <PriceHistoryContent />
+    </ErrorBoundary>
   )
 }
