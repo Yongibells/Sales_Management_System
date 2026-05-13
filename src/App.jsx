@@ -8,7 +8,7 @@ import CustomerLookupPage from './pages/lookups/CustomerLookupPage'
 import EmployeeLookupPage from './pages/lookups/EmployeeLookupPage'
 import ProductLookupPage from './pages/lookups/ProductLookupPage'
 import PriceHistoryPage from './pages/lookups/PriceHistoryPage'
-
+import SalesDetailPage from './pages/SalesDetailPage'
 export default function App() {
   return (
     <BrowserRouter>
@@ -22,6 +22,7 @@ export default function App() {
         {/* App pages — wrapped with AppShell (shows navbar + sidebar) */}
         <Route element={<AppShell />}>
           <Route path="/sales" element={<SalesListPage />} />
+          <Route path="/sales/:transno" element={<SalesDetailPage />} />
           <Route path="/lookups/customers" element={<CustomerLookupPage />} />
           <Route path="/lookups/employees" element={<EmployeeLookupPage />} />
           <Route path="/lookups/products" element={<ProductLookupPage />} />
