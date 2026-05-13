@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import AddSaleModal from '../components/sales/AddSaleModal'
 import EditSaleModal from '../components/sales/EditSaleModal'
