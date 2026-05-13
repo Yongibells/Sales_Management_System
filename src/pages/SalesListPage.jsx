@@ -6,7 +6,6 @@ import EditSaleModal from '../components/sales/EditSaleModal'
 import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
 
 export default function SalesListPage() {
-  const navigate = useNavigate()
   const [sales, setSales] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
