@@ -6,8 +6,25 @@ export default function AuthCallbackPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
+        const userId = session.user.id
+        const { data, error } = await supabase
+          .from('user')
+          .select('record_status')
+          .eq('userid', userId)
+          .single()
+        console.log('user data:', data, 'error:', error)
+        if (error || !data) {
+          await supabase.auth.signOut()
+          navigate('/login?error=not_activated')
+          return
+        }
+        if (data.record_status !== 'ACTIVE') {
+          await supabase.auth.signOut()
+          navigate('/login?error=not_activated')
+          return
+        }
         navigate('/sales')
       }
     })
@@ -39,12 +56,12 @@ export default function AuthCallbackPage() {
       }}>
         AUTHENTICATING...
       </p>
-      <style>{`
+      <style>{\
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-      `}</style>
+      \}</style>
     </div>
   )
 }
