@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { useRights } from '../context/UserRightsContext'
 import AddSaleModal from '../components/sales/AddSaleModal'
 import EditSaleModal from '../components/sales/EditSaleModal'
 import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
@@ -9,6 +10,9 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import { useRights } from '../context/UserRightsContext'
 
 function SalesListContent() {
+  const { userType } = useRights()
+  const isAdmin = userType !== 'USER'
+
   const [sales, setSales] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -86,7 +90,7 @@ function SalesListContent() {
             All sales records
           </p>
         </div>
-        {rights.SALES_ADD === 1 && (
+        {isAdmin && (
           <button
             onClick={() => setShowAdd(true)}
             style={{
@@ -165,18 +169,16 @@ function SalesListContent() {
                 style={{ color: 'rgba(0,255,80,0.8)' }}>Items</th>
               <th className="p-3 text-left font-mono"
                 style={{ color: 'rgba(0,255,80,0.8)' }}>Total</th>
-              {userType !== 'USER' && (
+              {isAdmin && (
                 <th className="p-3 text-left font-mono"
-                  style={{ color: 'rgba(0,255,80,0.8)' }}>Stamp</th>
+                  style={{ color: 'rgba(0,255,80,0.8)' }}>Actions</th>
               )}
-              <th className="p-3 text-left font-mono"
-                style={{ color: 'rgba(0,255,80,0.8)' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={userType !== 'USER' ? 8 : 7} className="p-6 text-center font-mono"
+                <td colSpan={isAdmin ? 7 : 6} className="p-6 text-center font-mono"
                   style={{ color: 'rgba(0,255,80,0.4)' }}>
                   No transactions found
                 </td>
@@ -197,22 +199,16 @@ function SalesListContent() {
                   <td className="p-3 font-mono"
                     style={{ color: '#b0ffb0' }}>{s.empname}</td>
                   <td className="p-3 font-mono text-center"
-                    style={{ color: '#b0ffb0' }}>{s.itemcount}</td>
+                    style={{ color: '#b0ffb0' }}>{s.line_item_count}</td>
                   <td className="p-3 font-mono"
                     style={{ color: '#00ff50' }}>
                     {Number(s.totalamount || 0).toLocaleString('en-PH', {
                       style: 'currency', currency: 'PHP'
                     })}
                   </td>
-                  {userType !== 'USER' && (
-                    <td className="p-3 font-mono"
-                      style={{ color: 'rgba(0,255,80,0.5)', fontSize: '11px' }}>
-                      {s.stamp || '—'}
-                    </td>
-                  )}
-                  <td className="p-3">
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      {rights.SALES_EDIT === 1 && (
+                  {isAdmin && (
+                    <td className="p-3">
+                      <div style={{ display: 'flex', gap: '6px' }}>
                         <button
                           onClick={() => setEditSale(s)}
                           style={{
@@ -227,8 +223,6 @@ function SalesListContent() {
                           }}>
                           EDIT
                         </button>
-                      )}
-                      {userType === 'SUPERADMIN' && rights.SALES_DEL === 1 && (
                         <button
                           onClick={() => setDeleteSale(s)}
                           style={{
@@ -243,9 +237,9 @@ function SalesListContent() {
                           }}>
                           DELETE
                         </button>
-                      )}
-                    </div>
-                  </td>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
