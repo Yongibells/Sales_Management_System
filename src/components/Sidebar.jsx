@@ -1,17 +1,12 @@
 import { NavLink } from 'react-router-dom'
-
-const navItems = [
-  { label: 'Sales', path: '/sales', icon: '📋' },
-  { label: 'Customers', path: '/lookups/customers', icon: '👥' },
-  { label: 'Employees', path: '/lookups/employees', icon: '👤' },
-  { label: 'Products', path: '/lookups/products', icon: '📦' },
-  { label: 'Prices', path: '/lookups/prices', icon: '💰' },
-  { label: 'Reports', path: '/reports', icon: '📊' },
-  { label: 'Admin', path: '/admin', icon: '⚙️' },
-  { label: 'Deleted Items', path: '/deleted-items', icon: '🗑️' },
-]
+import { useRights } from '../context/UserRightsContext'
 
 export default function Sidebar() {
+  const { rights, userType } = useRights()
+
+  const isUser = userType === 'USER'
+  const isAdminOrSuper = userType === 'ADMIN' || userType === 'SUPERADMIN'
+
   return (
     <div style={{
       width: '220px',
@@ -21,7 +16,6 @@ export default function Sidebar() {
       paddingTop: '20px',
       flexShrink: 0,
     }}>
-
       {/* Sales group */}
       <div style={{ marginBottom: '8px' }}>
         <p style={{
@@ -62,10 +56,13 @@ export default function Sidebar() {
           marginBottom: '4px'
         }}>OTHER</p>
         <SidebarLink path="/reports" label="Reports" />
-        <SidebarLink path="/admin" label="Admin" />
-        <SidebarLink path="/deleted-items" label="Deleted Items" />
+        {rights?.ADM_USER === 1 && (
+          <SidebarLink path="/admin" label="Admin" />
+        )}
+        {isAdminOrSuper && (
+          <SidebarLink path="/deleted-items" label="Deleted Items" />
+        )}
       </div>
-
     </div>
   )
 }
