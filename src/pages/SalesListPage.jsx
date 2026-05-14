@@ -7,6 +7,7 @@ import EditSaleModal from '../components/sales/EditSaleModal'
 import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { useRights } from '../context/UserRightsContext'
 
 function SalesListContent() {
   const { userType } = useRights()
@@ -21,6 +22,7 @@ function SalesListContent() {
   const [showAdd, setShowAdd] = useState(false)
   const [editSale, setEditSale] = useState(null)
   const [deleteSale, setDeleteSale] = useState(null)
+  const { rights, userType } = useRights()
 
   useEffect(() => {
     fetchSales()

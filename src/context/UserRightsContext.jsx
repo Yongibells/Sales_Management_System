@@ -17,7 +17,6 @@ export function UserRightsProvider({ children }) {
       setLoading(false)
       return
     }
-
     loadRights(currentUser.id)
   }, [currentUser])
 
@@ -33,19 +32,27 @@ export function UserRightsProvider({ children }) {
 
     if (userData) setUserType(userData.user_type)
 
-    // Get all rights
-    const { data: rightsData } = await supabase
+    // Get all rights IDs and values
+    const { data: umrData } = await supabase
       .from('usermodule_rights')
-      .select('rightname, rightvalue, rights(rightname)')
+      .select('rightsid, isallowed')
       .eq('userid', userId)
 
-    if (rightsData) {
-      const rightsMap = {}
-      rightsData.forEach(r => {
-        const name = r.rights?.rightname
-        if (name) rightsMap[name] = r.rightvalue
-      })
-      setRights(rightsMap)
+    if (umrData && umrData.length > 0) {
+      // Get all rights names
+      const { data: rightsData } = await supabase
+        .from('rights')
+        .select('rightsid, rightsname')
+
+      if (rightsData) {
+        const rightsMap = {}
+        umrData.forEach(umr => {
+          const right = rightsData.find(r => r.rightsid === umr.rightsid)
+          if (right) rightsMap[right.rightsname] = umr.isallowed
+        })
+        setRights(rightsMap)
+        console.log('Rights loaded:', rightsMap)
+      }
     }
 
     setLoading(false)
