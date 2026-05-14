@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { UserRightsProvider } from './context/UserRightsContext'
 import ProtectedRoute from './components/ProtectedRoute'
-import { useUserRights } from './context/UserRightsContext'
+import { useRights } from './context/UserRightsContext'
 import AppShell from './layouts/AppShell'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -14,8 +14,8 @@ import ProductLookupPage from './pages/lookups/ProductLookupPage'
 import PriceHistoryPage from './pages/lookups/PriceHistoryPage'
 
 function DeletedItemsGuard() {
-  const { userType, loading } = useUserRights()
-  if (loading) return <div>Loading...</div>
+const { userType, loading } = useUserRights()  
+if (loading) return <div>Loading...</div>
   if (userType === 'USER') return <Navigate to="/sales" />
   return <div>Deleted Items Page</div>
 }
