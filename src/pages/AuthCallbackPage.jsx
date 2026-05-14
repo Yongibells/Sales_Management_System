@@ -9,12 +9,13 @@ export default function AuthCallbackPage() {
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         const userId = session.user.id
-
         const { data, error } = await supabase
           .from('user')
           .select('record_status')
           .eq('userid', userId)
           .single()
+
+        console.log('user data:', data, 'error:', error)
 
         if (error || !data) {
           await supabase.auth.signOut()

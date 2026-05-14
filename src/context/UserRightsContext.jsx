@@ -2,64 +2,69 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from './AuthContext'
 
-const UserRightsContext = createContext(null)
+const UserRightsContext = createContext({})
 
 export function UserRightsProvider({ children }) {
-  const { currentUser, loading: authLoading } = useAuth()
+  const { currentUser } = useAuth()
   const [rights, setRights] = useState({})
   const [userType, setUserType] = useState(null)
-  const [loadingRights, setLoadingRights] = useState(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (authLoading) return
     if (!currentUser) {
       setRights({})
       setUserType(null)
-      setLoadingRights(false)
+      setLoading(false)
       return
     }
+    loadRights(currentUser.id)
+  }, [currentUser])
 
-    async function loadRights() {
-      setLoadingRights(true)
+  const loadRights = async (userId) => {
+    setLoading(true)
 
-      const { data: userData } = await supabase
-        .from('user')
-        .select('user_type')
-        .eq('userid', currentUser.id)
-        .single()
-      setUserType(userData?.user_type ?? null)
+    // Get user type
+    const { data: userData } = await supabase
+      .from('user')
+      .select('user_type')
+      .eq('userid', userId)
+      .single()
 
+    if (userData) setUserType(userData.user_type)
+
+    // Get all rights IDs and values
+    const { data: umrData } = await supabase
+      .from('usermodule_rights')
+      .select('rightsid, isallowed')
+      .eq('userid', userId)
+
+    if (umrData && umrData.length > 0) {
+      // Get all rights names
       const { data: rightsData } = await supabase
-        .from('usermodule_rights')
-        .select('rightsid, isallowed, rights(rightsname)')
-        .eq('userid', currentUser.id)
+        .from('rights')
+        .select('rightsid, rightsname')
 
-      const rightsMap = {}
       if (rightsData) {
-        rightsData.forEach(row => {
-          const name = row.rights?.rightsname
-          if (name) rightsMap[name] = row.isallowed ? 1 : 0
+        const rightsMap = {}
+        umrData.forEach(umr => {
+          const right = rightsData.find(r => r.rightsid === umr.rightsid)
+          if (right) rightsMap[right.rightsname] = umr.isallowed
         })
+        setRights(rightsMap)
+        console.log('Rights loaded:', rightsMap)
       }
-
-      setRights(rightsMap)
-      setLoadingRights(false)
     }
 
-    loadRights()
-  }, [currentUser, authLoading])
+    setLoading(false)
+  }
 
   return (
-    <UserRightsContext.Provider value={{ rights, userType, loadingRights }}>
+    <UserRightsContext.Provider value={{ rights, userType, loading }}>
       {children}
     </UserRightsContext.Provider>
   )
 }
 
 export function useRights() {
-  return useContext(UserRightsContext)
-}
-
-export function useUserRights() {
   return useContext(UserRightsContext)
 }
