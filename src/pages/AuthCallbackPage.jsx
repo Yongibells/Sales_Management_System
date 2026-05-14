@@ -14,17 +14,21 @@ export default function AuthCallbackPage() {
           .select('record_status')
           .eq('userid', userId)
           .single()
+
         console.log('user data:', data, 'error:', error)
+
         if (error || !data) {
           await supabase.auth.signOut()
           navigate('/login?error=not_activated')
           return
         }
+
         if (data.record_status !== 'ACTIVE') {
           await supabase.auth.signOut()
           navigate('/login?error=not_activated')
           return
         }
+
         navigate('/sales')
       }
     })
@@ -56,7 +60,12 @@ export default function AuthCallbackPage() {
       }}>
         AUTHENTICATING...
       </p>
-      <style dangerouslySetInnerHTML={{__html: '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }'}} />
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
