@@ -6,6 +6,7 @@ import EditSaleModal from '../components/sales/EditSaleModal'
 import DeleteSaleDialog from '../components/sales/DeleteSaleDialog'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { useRights } from '../context/UserRightsContext'
 
 function SalesListContent() {
   const [sales, setSales] = useState([])
@@ -17,6 +18,7 @@ function SalesListContent() {
   const [showAdd, setShowAdd] = useState(false)
   const [editSale, setEditSale] = useState(null)
   const [deleteSale, setDeleteSale] = useState(null)
+  const { rights, userType } = useRights()
 
   useEffect(() => {
     fetchSales()
@@ -84,22 +86,24 @@ function SalesListContent() {
             All sales records
           </p>
         </div>
-        <button
-          onClick={() => setShowAdd(true)}
-          style={{
-            background: 'linear-gradient(135deg, #00cc40, #00ff50)',
-            color: '#030d03',
-            fontFamily: 'monospace',
-            fontWeight: 'bold',
-            fontSize: '12px',
-            padding: '8px 16px',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            letterSpacing: '1px'
-          }}>
-          + ADD TRANSACTION
-        </button>
+        {rights.SALES_ADD === 1 && (
+          <button
+            onClick={() => setShowAdd(true)}
+            style={{
+              background: 'linear-gradient(135deg, #00cc40, #00ff50)',
+              color: '#030d03',
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              letterSpacing: '1px'
+            }}>
+            + ADD TRANSACTION
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -161,6 +165,10 @@ function SalesListContent() {
                 style={{ color: 'rgba(0,255,80,0.8)' }}>Items</th>
               <th className="p-3 text-left font-mono"
                 style={{ color: 'rgba(0,255,80,0.8)' }}>Total</th>
+              {userType !== 'USER' && (
+                <th className="p-3 text-left font-mono"
+                  style={{ color: 'rgba(0,255,80,0.8)' }}>Stamp</th>
+              )}
               <th className="p-3 text-left font-mono"
                 style={{ color: 'rgba(0,255,80,0.8)' }}>Actions</th>
             </tr>
@@ -168,7 +176,7 @@ function SalesListContent() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-6 text-center font-mono"
+                <td colSpan={userType !== 'USER' ? 8 : 7} className="p-6 text-center font-mono"
                   style={{ color: 'rgba(0,255,80,0.4)' }}>
                   No transactions found
                 </td>
@@ -196,36 +204,46 @@ function SalesListContent() {
                       style: 'currency', currency: 'PHP'
                     })}
                   </td>
+                  {userType !== 'USER' && (
+                    <td className="p-3 font-mono"
+                      style={{ color: 'rgba(0,255,80,0.5)', fontSize: '11px' }}>
+                      {s.stamp || '—'}
+                    </td>
+                  )}
                   <td className="p-3">
                     <div style={{ display: 'flex', gap: '6px' }}>
-                      <button
-                        onClick={() => setEditSale(s)}
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid rgba(0,255,80,0.3)',
-                          color: 'rgba(0,255,80,0.7)',
-                          fontFamily: 'monospace',
-                          fontSize: '11px',
-                          padding: '4px 10px',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}>
-                        EDIT
-                      </button>
-                      <button
-                        onClick={() => setDeleteSale(s)}
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid rgba(255,80,80,0.3)',
-                          color: 'rgba(255,100,100,0.7)',
-                          fontFamily: 'monospace',
-                          fontSize: '11px',
-                          padding: '4px 10px',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}>
-                        DELETE
-                      </button>
+                      {rights.SALES_EDIT === 1 && (
+                        <button
+                          onClick={() => setEditSale(s)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(0,255,80,0.3)',
+                            color: 'rgba(0,255,80,0.7)',
+                            fontFamily: 'monospace',
+                            fontSize: '11px',
+                            padding: '4px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}>
+                          EDIT
+                        </button>
+                      )}
+                      {userType === 'SUPERADMIN' && rights.SALES_DEL === 1 && (
+                        <button
+                          onClick={() => setDeleteSale(s)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(255,80,80,0.3)',
+                            color: 'rgba(255,100,100,0.7)',
+                            fontFamily: 'monospace',
+                            fontSize: '11px',
+                            padding: '4px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}>
+                          DELETE
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
